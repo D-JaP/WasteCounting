@@ -33,24 +33,13 @@ class ContextualModule(nn.Module):
 class CANNet2s(nn.Module):
     def __init__(self, load_weights=True):
         super(CANNet2s, self).__init__()
-<<<<<<< HEAD
         self.context = ContextualModule(32, 32)
-        # self.frontend_feat = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512]
-        self.frontend_feat = [32, 32, 'M', 32, 32, 'M', 40, 40, 30, 'M', 32, 32, 32]
+        # self.frontend_feat = [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 256, 256, 'M', 256, 256]
+        self.frontend_feat = [32, 32, 'M', 64, 64, 'M', 40, 40, 30, 'M', 32, 32, 32,'M', 64, 64]
         self.backend_feat  = [40, 60, 40,40,20,10]
         self.frontend = make_layers(self.frontend_feat)
         self.backend = make_layers(self.backend_feat,in_channels = 64, batch_norm=True, dilation = True)
-        self.output_layer = nn.Conv2d(64, 10, kernel_size=1)
-=======
-        # self.context = ContextualModule(32, 32)
-        # self.frontend_feat = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512]
-        self.frontend_feat = [32, 32, 'M', 32, 32, 'M', 40, 40, 30, 'M', 32, 32, 32]
-        # self.backend_feat  = [40, 60, 40,40,20,10]
-        self.backend_feat  = [40, 60, 40,40]
-        self.frontend = make_layers(self.frontend_feat)
-        self.backend = make_layers(self.backend_feat,in_channels = 64, batch_norm=True, dilation = True)
-        self.output_layer = nn.Conv2d(40, 10, kernel_size=1)
->>>>>>> mobilecountx2
+        self.output_layer = nn.Conv2d(10, 1, kernel_size=1)
         self.relu = nn.ReLU()
         self.dropout2 = nn.Dropout(p=0.2) 
         self.dropout = nn.Dropout(p=0.2)
@@ -66,14 +55,8 @@ class CANNet2s(nn.Module):
             pretrained_dict = {k[9:]: v for k, v in mod.state_dict().items() if k[9:] in self.frontend.state_dict()}
             self.frontend.load_state_dict(pretrained_dict)
 
-    def forward(self,x_prev,x):
-        x_prev1 = self.conv2dx10(x_prev)
-        x_prev1 = self.relu(x_prev1)
-        x_prev2 = self.conv2dx14(x_prev)
-        x_prev2 = self.relu(x_prev2)
-        x_prev3 = self.conv2dx16(x_prev)
-        x_prev3 = self.relu(x_prev3)
-        x_prev = torch.cat((x_prev1, x_prev2, x_prev3),1)
+    def forward(self,x):
+
 
         x1 = self.conv2dx10(x)
         x1 = self.relu(x1)
@@ -82,15 +65,10 @@ class CANNet2s(nn.Module):
         x3 = self.conv2dx16(x)
         x3 = self.relu(x3)
         x = torch.cat((x1, x2, x3), 1)
-        x_prev = self.frontend(x_prev)
         x = self.frontend(x)
         x = self.dropout(x)
-        x_prev = self.dropout(x_prev)
 
-        # x_prev = self.context(x_prev)
         # x = self.context(x)
-
-        x = torch.cat((x_prev,x),1)
 
         x = self.backend(x)
         x = self.output_layer(x)
