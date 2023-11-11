@@ -8,14 +8,16 @@ from sklearn.model_selection import train_test_split
 if __name__ == '__main__':
     # root is the path to your code, which is current directory
     root = './'
+    # output = join(root,'temp')
+    output = root
     # root_data is where you download the FDST dataset
     root_data = '../data/image/'
     # train_folders = join(root_data,'train_data')
     # test_folders = join(root_data,'test_data')
-    output_train_all = join(root,'train_all.json')
-    output_train = join(root,'train.json')
-    output_val = join(root,'val.json')
-    output_test = join(root,'test.json')
+    output_train_all = join(output,'train_all.json')
+    output_train = join(output,'train.json')
+    output_val = join(output,'val.json')
+    output_test = join(output,'test.json')
     all_img_list=[]
     train_all_img_list=[]
     test_img_list = []
@@ -38,6 +40,7 @@ if __name__ == '__main__':
     # with open(output_train_all,'w') as f:
     #     json.dump(train_all_img_list,f)
 
+    print(output_test)
     with open(output_train,'w') as f:
         json.dump(train_img_list,f)
 

@@ -22,7 +22,7 @@ def plotDensity(density,plot_path):
     @density: np array of corresponding density map
     @plot_path: path to save the plot
     '''
-    print(density)
+
     density= density*255.0
 
     #plot with overlay
@@ -68,14 +68,13 @@ for i in range(len(img_paths)):
     img_path = img_paths[i].replace('\\', '/')
     img_folder = os.path.dirname(img_path)
     img_name = os.path.basename(img_path)
-    index = int(img_name.split('.')[0])
 
 
 
     img = Image.open(img_path).convert('RGB')
 
-    img = img.resize((1280,960))
-
+    img = img.resize((1200,900))
+    original_img = img
     img = transform(img).cuda()
 
     gt_path = img_path.replace('.jpg','_resize.h5')
@@ -93,6 +92,7 @@ for i in range(len(img_paths)):
 
     overall = (model(img)).data.cpu().numpy()
     overall = overall[0,0,:,:]
+    print("total: "+img_path+" is " + str(int(overall.sum())))
 
     base_name = os.path.basename(img_path)
     folder_name = os.path.dirname(img_path).split('/')[-1]
@@ -101,9 +101,10 @@ for i in range(len(img_paths)):
 
     gt_path = os.path.join(output_folder+'/'+folder_name,base_name).replace('.jpg','_'+folder_name+'_gt.jpg')
     density_path = os.path.join(output_folder+'/'+folder_name,base_name).replace('.jpg','_'+folder_name+'_pred.jpg')
-    print(overall.shape)
-    pred = cv2.resize(overall,(overall.shape[1]*16,overall.shape[0]*16),interpolation = cv2.INTER_CUBIC)/256.0
+    ori_path = os.path.join(output_folder+'/'+folder_name,base_name).replace('.jpg','_'+folder_name+'_origin.jpg')
 
+    pred = cv2.resize(overall,(overall.shape[1]*4,overall.shape[0]*4),interpolation = cv2.INTER_CUBIC)/16.0
+    cv2.imwrite(ori_path, cv2.resize(cv2.imread(img_path), (1200,900)))
     plotDensity(pred,density_path)
     plotDensity(target,gt_path)
 

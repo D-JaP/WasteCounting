@@ -1,0 +1,42 @@
+{% set name = "bottle-websocket" %}
+{% set version = "0.2.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 9887f70dc0c7592ed8d0d11a14aa95dede6cd08d50d83d5b81fd963e5fec738b
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - bottle
+    - gevent-websocket
+    - pip
+    - python
+  run:
+    - bottle
+    - gevent-websocket
+    - python
+
+test:
+  imports:
+    - bottle_websocket
+
+about:
+  home: "https://github.com/zeekay/bottle-websocket"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "WebSockets for bottle"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here

@@ -33,12 +33,14 @@ class ContextualModule(nn.Module):
 class CANNet2s(nn.Module):
     def __init__(self, load_weights=True):
         super(CANNet2s, self).__init__()
-        self.context = ContextualModule(32, 32)
-        # self.frontend_feat = [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 256, 256, 'M', 256, 256]
-        self.frontend_feat = [32, 32, 'M', 64, 64, 'M', 40, 40, 30, 'M', 32, 32, 32,'M', 64, 64]
-        self.backend_feat  = [40, 60, 40,40,20,10]
+        self.context = ContextualModule(256, 512)
+        self.frontend_feat = [64, 64, 'M', 128, 128, 'M', 256, 256,256]
+        # self.frontend_feat = [32, 32, 'M', 64, 64, 'M', 40, 40, 30, 'M', 32, 32, 32,'M', 64, 64]
+        # self.mid_feat = [ 'M',1024,1024,1024]
+        self.backend_feat  = [256, 256, 128,64,32,10]
         self.frontend = make_layers(self.frontend_feat)
-        self.backend = make_layers(self.backend_feat,in_channels = 64, batch_norm=True, dilation = True)
+        # self.mid = make_layers(self.mid_feat, in_channels=512)
+        self.backend = make_layers(self.backend_feat,in_channels = 512, batch_norm=True, dilation = True)
         self.output_layer = nn.Conv2d(10, 1, kernel_size=1)
         self.relu = nn.ReLU()
         self.dropout2 = nn.Dropout(p=0.2) 
@@ -48,27 +50,27 @@ class CANNet2s(nn.Module):
         self.conv2dx10 = nn.Conv2d(3, 10, kernel_size=9, padding =4, dilation =1)
         self.conv2dx14 = nn.Conv2d(3, 14, kernel_size=7, padding =3, dilation =1)
         self.conv2dx16 = nn.Conv2d(3, 16, kernel_size=5, padding =2, dilation =1)
-        if not load_weights:
+        if load_weights:
             mod = models.vgg16(pretrained = True)
             self._initialize_weights()
             # address the mismatch in key names for python 3
             pretrained_dict = {k[9:]: v for k, v in mod.state_dict().items() if k[9:] in self.frontend.state_dict()}
-            self.frontend.load_state_dict(pretrained_dict)
+            self.frontend.load_state_dict(pretrained_dict,strict = False)
 
     def forward(self,x):
 
 
-        x1 = self.conv2dx10(x)
-        x1 = self.relu(x1)
-        x2 = self.conv2dx14(x)
-        x2 = self.relu(x2)
-        x3 = self.conv2dx16(x)
-        x3 = self.relu(x3)
-        x = torch.cat((x1, x2, x3), 1)
+        # x1 = self.conv2dx10(x)
+        # x1 = self.relu(x1)
+        # x2 = self.conv2dx14(x)
+        # x2 = self.relu(x2)
+        # x3 = self.conv2dx16(x)
+        # x3 = self.relu(x3)
+        # x = torch.cat((x1, x2, x3), 1)
         x = self.frontend(x)
-        x = self.dropout(x)
-
-        # x = self.context(x)
+        # x = self.dropout(x)
+        # x= self.mid(x)
+        x = self.context(x)
 
         x = self.backend(x)
         x = self.output_layer(x)
@@ -85,7 +87,7 @@ class CANNet2s(nn.Module):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
 
-def make_layers(cfg, in_channels = 40,batch_norm=False,dilation = False):
+def make_layers(cfg, in_channels = 3,batch_norm=False,dilation = False):
     if dilation:
         d_rate = 2
     else:
@@ -94,6 +96,8 @@ def make_layers(cfg, in_channels = 40,batch_norm=False,dilation = False):
     for v in cfg:
         if v == 'M':
             layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
+        elif v== 'A':
+            layers += [nn.AvgPool2d(kernel_size=2, stride=2)]
         else:
             conv2d = nn.Conv2d(in_channels, v, kernel_size=3, padding=d_rate,dilation = d_rate)
             if batch_norm:

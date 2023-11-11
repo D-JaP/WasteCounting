@@ -1,0 +1,46 @@
+{% set name = "Eel" %}
+{% set version = "1.0.0a1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 66dd88c51c4e7744033b3bed39ae65e802806315ab44589427d61d7104d91410
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - bottle
+    - bottle-websocket
+    - future
+    - pip
+    - python
+    - whichcraft
+  run:
+    - bottle
+    - bottle-websocket
+    - future
+    - python
+    - whichcraft
+
+test:
+  imports:
+    - eel
+
+about:
+  home: The package home page
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "For little HTML GUI applications, with easy Python/JS interop"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here

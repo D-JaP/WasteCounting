@@ -109,7 +109,7 @@ def train(train_list, model, criterion, optimizer, epoch):
         target = target.type(torch.FloatTensor)[0].cuda()
         target = Variable(target)
 
-        loss = criterion(predicted, target)
+        loss = criterion(predicted[0,0,:,:], target)
 
 
 

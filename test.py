@@ -15,7 +15,7 @@ import cv2
 import time
 from torchvision import transforms
 
-from sklearn.metrics import mean_squared_error,mean_absolute_error
+from sklearn.metrics import mean_squared_error,mean_absolute_error, mean_absolute_percentage_error
 
 transform=transforms.Compose([
                        transforms.ToTensor(),transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -40,7 +40,7 @@ print(f"Number of parameters: {total_params}")
 model = model.cuda()
 
 # modify the path of saved checkpoint if necessary
-checkpoint = torch.load('fdst.pth.tar')
+checkpoint = torch.load('model_best.pth.tar')
 
 model.load_state_dict(checkpoint['state_dict'])
 
@@ -54,69 +54,42 @@ for i in range(len(img_paths)):
 
     img_folder = os.path.dirname(img_path)
     img_name = os.path.basename(img_path)
-    index = int(img_name.split('.')[0])
 
-    prev_index = int(max(1,index-5))
-
-    prev_img_path = os.path.join(img_folder,'%03d.jpg'%(prev_index))
-
-    prev_img = Image.open(prev_img_path).convert('RGB')
     img = Image.open(img_path).convert('RGB')
 
-    prev_img = prev_img.resize((640,360))
-    img = img.resize((640,360))
+    img = img.resize((1200,900))
 
-    prev_img = transform(prev_img).cuda()
     img = transform(img).cuda()
 
     gt_path = img_path.replace('.jpg','_resize.h5')
     gt_file = h5py.File(gt_path)
     target = np.asarray(gt_file['density'])
 
-    prev_img = prev_img.cuda()
-    prev_img = Variable(prev_img)
+
 
     img = img.cuda()
     img = Variable(img)
 
 
     img = img.unsqueeze(0)
-    prev_img = prev_img.unsqueeze(0)
 
-    # mask_boundry = torch.zeros(prev_flow.shape[2:])
-    mask_boundry = torch.zeros((45,80))
-    mask_boundry[0,:] = 1.0
-    mask_boundry[-1,:] = 1.0
-    mask_boundry[:,0] = 1.0
-    mask_boundry[:,-1] = 1.0
 
-    mask_boundry = Variable(mask_boundry.cuda())
     
     
     torch.cuda.synchronize()
     t0 = time.time()
-    prev_flow = model(prev_img,img)
-    prev_flow_inverse = model(img,prev_img)
+    output1 = model(img)
 
-    reconstruction_from_prev = F.pad(prev_flow[0,0,1:,1:],(0,1,0,1))+F.pad(prev_flow[0,1,1:,:],(0,0,0,1))+F.pad(prev_flow[0,2,1:,:-1],(1,0,0,1))+F.pad(prev_flow[0,3,:,1:],(0,1,0,0))+prev_flow[0,4,:,:]+F.pad(prev_flow[0,5,:,:-1],(1,0,0,0))+F.pad(prev_flow[0,6,:-1,1:],(0,1,1,0))+F.pad(prev_flow[0,7,:-1,:],(0,0,1,0))+F.pad(prev_flow[0,8,:-1,:-1],(1,0,1,0))+prev_flow[0,9,:,:]*mask_boundry
-    reconstruction_from_prev_inverse = torch.sum(prev_flow_inverse[0,:9,:,:],dim=0)+prev_flow_inverse[0,9,:,:]*mask_boundry
-    output1 =((reconstruction_from_prev+reconstruction_from_prev_inverse)/2.0)
+    
     output1 = output1.sum()
     elapsed_fp = time.time() - t0
     torch.cuda.synchronize()
 
-<<<<<<< HEAD
-    reconstruction_from_prev_inverse = torch.sum(prev_flow_inverse[0,:9,:,:],dim=0)+prev_flow_inverse[0,9,:,:]*mask_boundry
-=======
-    # overall = ((reconstruction_from_prev+reconstruction_from_prev_inverse)/2.0).data.cpu().numpy()
-    # overall = ((reconstruction_from_prev)).data.cpu().numpy()
-    
 
     _time.append(elapsed_fp)
->>>>>>> mobilecountx2
 
     if(len(_time)>3):
-        print((int)(1/(sum(_time)/3)))
+        # print((int)(1/(sum(_time)/3)))
         _time=[]
 
     target = target
@@ -127,9 +100,12 @@ for i in range(len(img_paths)):
     pred.append(pred_sum)
     gt.append(np.sum(target))
 
+print([np.round(i.item(),1) for i in pred] )
+print([int(i) for i in gt])
 mae = mean_absolute_error(pred,gt)
 rmse = np.sqrt(mean_squared_error(pred,gt))
-
+mape = mean_absolute_percentage_error(pred,gt)
 print ('MAE: ',mae)
 print ('RMSE: ',rmse)
+print ('MAPE: ', mape)
 

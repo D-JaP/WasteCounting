@@ -7,7 +7,7 @@ import time
 # Loop through list of image -> and rotate, also fix json file
 root = './'
 # root_data is where you download the FDST dataset
-root_data = '../data/image/'
+root_data = '../data/new_img_w6/'
 
 
 all_img_list=[]

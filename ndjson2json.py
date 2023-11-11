@@ -1,8 +1,8 @@
 import json
 
 # Read the NDJSON file
-ndjson_filename = './export-result-final-1.ndjson'
-output_path = '../data/image/'
+ndjson_filename = '.\export-result-w6.ndjson'
+output_path = '../data/new_img_w6/'
 
 with open(ndjson_filename, 'r') as ndjson_file:
     for i, line in enumerate(ndjson_file):

@@ -32,6 +32,10 @@ Google Drive: [link](https://drive.google.com/drive/folders/19c2X529VTNjl3YL1EYw
 
 &emsp;3. Use create_json.py to generate the json file which contains the path to the images.
 
+## Data preparing
+We use Labelbox to annotate data.
+
+
 ## Training
 In command line:
 
@@ -61,15 +65,7 @@ python test.py
 python plot.py
 
 ``` 
-This will plot the flows of each direction along with the density map
-
-
-
-## Pre-trained Model
-
-The pretrained model is in [GoogleDrive](https://drive.google.com/file/d/1RztStHTi7kd-q2zoYhgbSzQ0r5sVFQAu/view?usp=sharing) with MAE=1.96
-
-
+This will plot objects density map
 
  
 ## Citing
@@ -112,5 +108,5 @@ year = {2021}
 
 ## Contact
 
-For any questions regard this paper/code, please directly contact [Weizhe Liu](mailto:weizhe.liu@epfl.ch).
+For any questions regard this paper/code, please directly contact [Harry Le](mailto:dzung.leanh218@gmail.com).
 
