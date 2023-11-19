@@ -7,7 +7,6 @@ import glob
 import scipy
 from image import *
 from model import CANNet2s
-from MobileCount import MobileCount
 import torch
 from torch.autograd import Variable
 import torch.nn.functional as F
@@ -36,7 +35,6 @@ total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 print(f"Number of parameters: {total_params}")
 
-# model = MobileCount()
 model = model.cuda()
 
 # modify the path of saved checkpoint if necessary
@@ -57,7 +55,7 @@ for i in range(len(img_paths)):
 
     img = Image.open(img_path).convert('RGB')
 
-    img = img.resize((1200,900))
+    img = img.resize((960,720))
 
     img = transform(img).cuda()
 
@@ -78,7 +76,21 @@ for i in range(len(img_paths)):
     
     torch.cuda.synchronize()
     t0 = time.time()
-    output1 = model(img)
+    img1 =  img[:,:,:(int(img.shape[2]/2)),:(int(img.shape[3]/2)) ]
+    img2 = img[:,:,:(int(img.shape[2]/2)) :,(int(img.shape[3]/2)): ]
+    img3 = img[:,:,(int(img.shape[2]/2)) :,:(int(img.shape[3]/2)) ]
+    img4 = img[:,:,(int(img.shape[2]/2)):,(int(img.shape[3]/2)): ]
+
+
+    predicted1 = model(img1)
+    predicted2 = model(img2)
+    predicted3 = model(img3)
+    predicted4 = model(img4)
+    predicted_temp_1 = torch.cat((predicted1,predicted2), dim =3)
+    predicted_temp_2 = torch.cat((predicted3,predicted4), dim =3)
+
+    output1 = torch.cat((predicted_temp_1, predicted_temp_2) , dim = 2)
+    # output1 = model(img)
 
     
     output1 = output1.sum()
@@ -104,7 +116,7 @@ print([np.round(i.item(),1) for i in pred] )
 print([int(i) for i in gt])
 mae = mean_absolute_error(pred,gt)
 rmse = np.sqrt(mean_squared_error(pred,gt))
-mape = mean_absolute_percentage_error(pred,gt)
+mape = mean_absolute_percentage_error([np.round(i) for i in pred],gt)
 print ('MAE: ',mae)
 print ('RMSE: ',rmse)
 print ('MAPE: ', mape)

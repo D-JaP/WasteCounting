@@ -73,7 +73,7 @@ for i in range(len(img_paths)):
 
     img = Image.open(img_path).convert('RGB')
 
-    img = img.resize((1200,900))
+    img = img.resize((640,480))
     original_img = img
     img = transform(img).cuda()
 
@@ -104,13 +104,9 @@ for i in range(len(img_paths)):
     ori_path = os.path.join(output_folder+'/'+folder_name,base_name).replace('.jpg','_'+folder_name+'_origin.jpg')
 
     pred = cv2.resize(overall,(overall.shape[1]*4,overall.shape[0]*4),interpolation = cv2.INTER_CUBIC)/16.0
-    cv2.imwrite(ori_path, cv2.resize(cv2.imread(img_path), (1200,900)))
+    cv2.imwrite(ori_path, cv2.resize(cv2.imread(img_path), (640,480)))
     plotDensity(pred,density_path)
     plotDensity(target,gt_path)
-
-    
-
-
 
 
     # print(os.path.join(output_folder+'/'+folder_name,base_name).replace('.jpg','_'+folder_name+'_hsv.jpg'))

@@ -7,7 +7,6 @@ import glob
 import scipy
 from image import *
 from model import CANNet2s
-from MobileCount import MobileCount
 import torch
 from torch.autograd import Variable
 import torch.nn.functional as F
@@ -39,7 +38,7 @@ print(f"Number of parameters: {total_params}")
 # model = model.cuda()
 
 # Modify the path of the saved checkpoint if necessary
-checkpoint = torch.load('10.pth.tar', map_location=torch.device('cpu'))
+checkpoint = torch.load('./final/final_bottle_85%.pth.tar', map_location=torch.device('cpu'))
 
 model.load_state_dict(checkpoint['state_dict'])
 

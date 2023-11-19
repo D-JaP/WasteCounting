@@ -1,6 +1,5 @@
 import os
 from model import CANNet2s
-from MobileCount import MobileCount
 from utils import save_checkpoint
 
 import torch
@@ -46,7 +45,6 @@ def main():
     torch.cuda.manual_seed(args.seed)
 
     model = CANNet2s()
-    # model = MobileCount()
     total_params = sum(p.numel() for p in model.parameters())
     print(f"Number of parameters: {total_params}")
 
@@ -104,11 +102,27 @@ def train(train_list, model, criterion, optimizer, epoch):
         img = img.cuda()
         img = Variable(img)
 
-        predicted = model(img)
+        img1 =  img[:,:,:(int(img.shape[2]/2)),:(int(img.shape[3]/2)) ]
+        img2 = img[:,:,:(int(img.shape[2]/2)) :,(int(img.shape[3]/2)): ]
+        img3 = img[:,:,(int(img.shape[2]/2)) :,:(int(img.shape[3]/2)) ]
+        img4 = img[:,:,(int(img.shape[2]/2)):,(int(img.shape[3]/2)): ]
 
+
+        predicted1 = model(img1)
+        predicted2 = model(img2)
+        predicted3 = model(img3)
+        predicted4 = model(img4)
+        predicted_temp_1 = torch.cat((predicted1,predicted2), dim =3)
+        predicted_temp_2 = torch.cat((predicted3,predicted4), dim =3)
+
+        predicted = torch.cat((predicted_temp_1, predicted_temp_2) , dim = 2)
+
+        
         target = target.type(torch.FloatTensor)[0].cuda()
         target = Variable(target)
 
+        # print(target.shape)
+        # print(predicted.shape)
         loss = criterion(predicted[0,0,:,:], target)
 
 
@@ -152,8 +166,22 @@ def validate(val_list, model, criterion):
 
         img = img.cuda()
         img = Variable(img)
+        
+        img1 =  img[:,:,:(int(img.shape[2]/2)),:(int(img.shape[3]/2)) ]
+        img2 = img[:,:,:(int(img.shape[2]/2)) :,(int(img.shape[3]/2)): ]
+        img3 = img[:,:,(int(img.shape[2]/2)) :,:(int(img.shape[3]/2)) ]
+        img4 = img[:,:,(int(img.shape[2]/2)):,(int(img.shape[3]/2)): ]
 
-        predict = model(img)
+
+        predicted1 = model(img1)
+        predicted2 = model(img2)
+        predicted3 = model(img3)
+        predicted4 = model(img4)
+        predicted_temp_1 = torch.cat((predicted1,predicted2), dim =3)
+        predicted_temp_2 = torch.cat((predicted3,predicted4), dim =3)
+
+        predict = torch.cat((predicted_temp_1, predicted_temp_2) , dim = 2)
+        # predict = model(img)
 
         target = target.type(torch.FloatTensor)[0].cuda()
         target = Variable(target)
