@@ -1,0 +1,145 @@
+body {
+    background-color: #c6e6b4;
+}
+.centre {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.pad20{
+    padding:20px;
+}
+.d-flex-center {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.heading1 {
+    text-align: center;
+    color: #114e2f;
+    font-size: xx-large;
+}
+.heading2{
+    text-align: center;
+    color: #114e2f;
+}
+.form_design {
+    margin: 0 auto; 
+    width:250px;
+}
+.submit_button {
+    margin: 0 auto; 
+    width:250px;
+
+}
+h3 {
+    color: #114e2f;
+}
+
+h4 {
+    color: #114e2f;
+}
+form {
+width: 600px;
+background: #96cf8b;
+margin: 0 auto;
+padding: 20px;
+border: 1px solid black;
+}
+
+form ol {
+padding-left: 0;
+}
+
+form li, div > p {
+background: #eee;
+display: flex;
+justify-content: space-between;
+margin-bottom: 10px;
+list-style-type: none;
+border: 1px solid black;
+}
+
+form img {
+height: 64px;
+order: 1;
+}
+
+form p {
+line-height: 32px;
+padding-left: 10px;
+}
+
+form label, form button {
+background-color: #54b872;
+padding: 5px 10px;
+border-radius: 5px;
+border: 1px ridge black;
+font-size: 0.8rem;
+height: auto;
+}
+
+form label:hover, form button:hover {
+background-color: #2da34a;
+color: white;
+}
+
+form label:active, form button:active {
+background-color: #0d8f34;
+color: white;
+}
+
+#summary {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
+.image-bar {
+    width: 1000px;
+    border-radius: 5px;
+    margin: 5px;
+    background-color: #eee;
+    
+}
+
+.image-bar:hover > .img-name {
+    opacity: 0.5;
+}
+
+/* loading icon */
+.spinner {
+    animation: rotate 2s linear infinite;
+    z-index: 1000;
+    width: 25px;
+    height: 25px;
+    
+    & .path {
+      stroke: hsl(210, 89%, 31%);
+      stroke-linecap: round;
+      animation: dash 1.5s ease-in-out infinite;
+    }
+    
+  }
+  
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes dash {
+    0% {
+      stroke-dasharray: 1, 150;
+      stroke-dashoffset: 0;
+    }
+    50% {
+      stroke-dasharray: 90, 150;
+      stroke-dashoffset: -35;
+    }
+    100% {
+      stroke-dasharray: 90, 150;
+      stroke-dashoffset: -124;
+    }
+  }

@@ -1,0 +1,52 @@
+{   
+    "name" : "Park Victoria Waste Counting Project",
+    "weight_localtion": "./final",
+    "class": [
+        {
+            "plastic_bottle" :  {
+                "img_width":640,
+                "img_height": 480,
+                "tile": 0,
+                "model_name": "final_bottle_85%.pth.tar",
+                "downscale_level": 4
+            }
+        },
+        {
+            "helmet" :  {
+                "img_width":480,
+                "img_height": 320,
+                "tile": 0,
+                "model_name": "helmet_final_88%.pth.tar",
+                "downscale_level": 4
+            } 
+        },
+        {
+            "ball" :  {
+                "img_width":960,
+                "img_height": 720,
+                "tile": 2,
+                "model_name": "74%ball_final.pth.tar",
+                "downscale_level": 8
+            }
+        },
+        {
+            "spray_can" :  {
+                "img_width":1280,
+                "img_height": 960,
+                "tile": 2,
+                "model_name" : "spray_final_60%.pth.tar",
+                "downscale_level": 8
+            }
+        },
+        {
+            "foam" :  {
+                "img_width":640,
+                "img_height": 480,
+                "tile": 2,
+                "model_name" : "60%_final_foam_piece.pth.tar",
+                "downscale_level": 8
+            }
+        }
+    ]
+    
+}

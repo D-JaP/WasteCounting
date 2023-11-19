@@ -1,5 +1,5 @@
 import torch.nn as nn
-import torch
+from torch
 from torch.nn import functional as F
 from torchvision import models
 from utils import save_net,load_net
@@ -108,26 +108,3 @@ def make_layers(cfg, in_channels = 3,batch_norm=False,dilation = False):
         
     return nn.Sequential(*layers)
 
-class CCNN(nn.Module):
-    def __init__(self):
-        self.CNN_feat = [40, 60 ,'M', 40,'M',20,10]
-        self.Mid_cnn = make_layers(self.CNN_feat, in_channels=40)
-        self.red_cnn = nn.Conv2d(3, 10, kernel_size=9)
-        self.green_cnn = nn.Conv2d(3, 14, kernel_size=7)
-        self.blue_cnn = nn.Conv2d(3, 16, kernel_size=5)
-
-    def forward(self, x_prev, x):
-        x_prev_red = self.red_cnn(x_prev)
-        x_prev_green = self.green_cnn(x_prev)
-        x_prev_blue = self.blue_cnn(x_prev)
-        
-        x_red = self.red_cnn(x)
-        x_green = self.green_cnn(x)
-        x_blue = self.blue_cnn(x)
-
-        x_prev = nn.cat((x_prev_red,x_prev_green, x_prev_blue), dim =1)
-        x = nn.cat((x_red, x_green, x_blue), dim = 1)
-
-        x= self.Mid_cnn()
-
-        

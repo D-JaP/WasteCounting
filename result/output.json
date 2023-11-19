@@ -1,0 +1,22 @@
+{
+  "plastic_bottle": {
+    "count": 116,
+    "path": "./static/result\\48ff7f76-8427-11ee-a670-14d4248e6310\\plastic_bottle_001_pred.jpg"
+  },
+  "helmet": {
+    "count": 0,
+    "path": "./static/result\\48ff7f76-8427-11ee-a670-14d4248e6310\\helmet_001_pred.jpg"
+  },
+  "ball": {
+    "count": 30,
+    "path": "./static/result\\48ff7f76-8427-11ee-a670-14d4248e6310\\ball_001_pred.jpg"
+  },
+  "spray_can": {
+    "count": 11,
+    "path": "./static/result\\48ff7f76-8427-11ee-a670-14d4248e6310\\spray_can_001_pred.jpg"
+  },
+  "foam": {
+    "count": 87,
+    "path": "./static/result\\48ff7f76-8427-11ee-a670-14d4248e6310\\foam_001_pred.jpg"
+  }
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+    <head>
+        <title>ParkVic Waste Counter App</title>
+        <link rel="stylesheet" type="text/css" href="..\static\style.css">
+        <link rel="icon" href="..\static\parkvic_icon.png" type="image/x-icon">
+
+        <!-- scripts file  -->
+        <script src="..\static\submit.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+        
+    </head>
+    
+    <body >
+
+        <div>
+            <div>
+                <img src="..\static\logo.jpg" type="jpg" alt="logo" class="centre">
+            </div>
+            <div>
+                <hr><class="col-xs-12"><hr>
+            </div>
+            <div>
+                <h1 class="heading1">Litter Sorting Gone Easy</h1>
+            </div>
+            <form id="form_submit" method="post">
+                <div>
+                    <label for="image_uploads">Choose images to upload (PNG, JPG)</label>
+                    <input type="file" id="image_uploads" name="image_uploads" accept=".jpg, .jpeg, .png" multiple >
+                </div>
+                <div class="preview">
+                    <p>No files currently selected for upload</p>
+                </div>
+                <div style="display: flex;">
+                    <button type="submit" onclick="submitForm(event)">Analyze</button>
+                    <svg class="spinner" viewBox="0 0 50 50" style="margin-left: 20px; display:none">
+                        <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="7"></circle>
+                    </svg>
+                </div>
+            </form>
+
+            <div id= "summary">
+                <h1 class="heading1" style="width: 100%;">Summary</h1>
+                <canvas id="myChart" style="width:100%;max-width:720px;margin-left: auto;margin-right: auto;display: none;" ></canvas>
+            </div>
+            <div id= "img_summary" class="d-flex-center" style="padding: 5px;">
+                <h1 class="heading1">The following is the litter count of the given image</h1>
+                
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="..\static\script.js"></script>
+    
+</html> 
