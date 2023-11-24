@@ -18,7 +18,7 @@ root_data =  '../data/image/'
 
 img_paths = []
 
-class_name = ["plastic_bottle"]
+class_name = ["glass_bottle"]
 
 for root,dirs, files in os.walk(root_data):
     for file_name in files:
@@ -41,16 +41,16 @@ for img_path in img_paths:
 
 
     img= plt.imread(img_path)
-    k = np.zeros((720,960))
-    rate_h = img.shape[0]/720.0
-    rate_w = img.shape[1]/960.0
+    k = np.zeros((480,640))
+    rate_h = img.shape[0]/480.0
+    rate_w = img.shape[1]/640.0
     for i in anno_list:
         if i["name"] in class_name:
             y = i["bounding_box"]["top"] + i["bounding_box"]["height"] /2
             x = i["bounding_box"]["left"] + i["bounding_box"]["width"] /2
 
-            y_anno = min(int(y/rate_h),720)
-            x_anno = min(int(x/rate_w),960)
+            y_anno = min(int(y/rate_h),480)
+            x_anno = min(int(x/rate_w),640)
             k[y_anno,x_anno]=1
 
     k = gaussian_filter(k,3)

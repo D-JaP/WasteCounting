@@ -1,8 +1,8 @@
 from flask import Flask , request, jsonify, url_for
 from flask import render_template
-from flaskwebgui import FlaskUI # import FlaskUI
+# from flaskwebgui import FlaskUI # import FlaskUI
 from run_program import analyze
-from PIL import Image
+# from PIL import Image
 import os
 import uuid
 import shutil
@@ -74,7 +74,7 @@ def deleteDir(folder):
 
 if __name__ == "__main__":
   # If you are debugging you can do that in the browser:
-#   app.run()
+  app.run(host="0.0.0.0", port=8080)
   # If you want to view the flaskwebgui window:
-    FlaskUI(app=app, server="flask", width = 1400, height = 1000).run()
+    # FlaskUI(app=app, server="flask", width = 1400, height = 1000).run()
 

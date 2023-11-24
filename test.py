@@ -55,7 +55,7 @@ for i in range(len(img_paths)):
 
     img = Image.open(img_path).convert('RGB')
 
-    img = img.resize((960,720))
+    img = img.resize((640,480))
 
     img = transform(img).cuda()
 

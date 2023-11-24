@@ -2,17 +2,14 @@ import json
 import PIL.Image as Image
 import numpy as np
 import os
-from image import *
 from model_final import CANNet2s_bottle, CANNet2s_helmet, CANNet2s_spray, CANNet2s_ball, CANNet2s_foam
 from torch import device as torchdevice
 from torch import load as torch_load
 from torch import cat as torch_cat
 from torch.autograd import Variable
-# import torch.nn.functional as F
 import cv2
 from torchvision import transforms
 import argparse
-from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 from matplotlib import cm
 
 def read_config(file_path):
@@ -141,9 +138,12 @@ def analyze(img_path, output_path):
         output_print = output_density.data.numpy()[0,0,:,:]
         pred = cv2.resize(output_print,(output_print.shape[1]*downscale_level,output_print.shape[0]*downscale_level),interpolation = cv2.INTER_CUBIC)/(downscale_level*downscale_level)
         pred = cv2.resize(pred, (1280,960))
-        output_density_path =  os.path.join('./', density_path.split("/",2)[-1])
-        print(output_density_path)
-        output_data[class_name] = {"count": int(np.round(pred_sum)), "path": output_density_path}
+
+        # for pyinstaller only
+        # density_path =  os.path.join('./', density_path.split("/",2)[-1])
+
+
+        output_data[class_name] = {"count": int(np.round(pred_sum)), "path": density_path}
         
         # plotDensity(pred,density_path)
         plotDensityBlend(original_img.resize((1280,960)), pred, density_path, 0.5)

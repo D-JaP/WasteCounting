@@ -1,5 +1,5 @@
 import torch.nn as nn
-from torch
+import torch
 from torch.nn import functional as F
 from torchvision import models
 from utils import save_net,load_net
