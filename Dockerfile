@@ -1,23 +1,22 @@
-FROM continuumio/miniconda3:latest
+FROM python:3.11.6
 
-RUN conda install pytorch torchvision torchaudio cpuonly -c pytorch -y
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 COPY env.yml .
 
-RUN apt-get update && apt-get install libgl1 -y
-RUN conda env create --prefix ./parkvic -f ./env.yml
-RUN conda install -c conda-forge opencv -y
-RUN conda install matplotlib -y
-RUN conda install flask -y
+# RUN yum update -y 
+# RUN yum install libglvnd-glx -y
+RUN apt-get update -y 
+RUN apt-get install libgl1 -y
+RUN pip install matplotlib 
+RUN pip install flask 
+RUN pip install pillow 
+RUN pip install h5py
 
 COPY . /parkvic/WasteCounter
 
 WORKDIR /parkvic/WasteCounter
 
-RUN ls
-
-SHELL ["conda", "run", "-n", "parkvic", "/bin/bash", "-c"]
-
 EXPOSE 8080
 
-CMD ["ls","python", "window_app.py"]
+CMD ["python", "web_app.py"]

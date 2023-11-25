@@ -7,7 +7,7 @@ from torch import device as torchdevice
 from torch import load as torch_load
 from torch import cat as torch_cat
 from torch.autograd import Variable
-import cv2
+# import cv2
 from torchvision import transforms
 import argparse
 from matplotlib import cm
@@ -18,23 +18,23 @@ def read_config(file_path):
     return config
 
 
-def plotDensity(density,plot_path):
-    '''
-    @density: np array of corresponding density map
-    @plot_path: path to save the plot
-    '''
+# def plotDensity(density,plot_path):
+#     '''
+#     @density: np array of corresponding density map
+#     @plot_path: path to save the plot
+#     '''
 
-    density= density*255.0
+#     density= density*255.0
 
-    #plot with overlay
-    colormap_i = cm.jet(density)[:,:,0:3]
+#     #plot with overlay
+#     colormap_i = cm.jet(density)[:,:,0:3]
 
-    overlay_i = colormap_i
+#     overlay_i = colormap_i
 
-    new_map = overlay_i.copy()
-    new_map[:,:,0] = overlay_i[:,:,2]
-    new_map[:,:,2] = overlay_i[:,:,0]
-    cv2.imwrite(plot_path,new_map*255)
+#     new_map = overlay_i.copy()
+#     new_map[:,:,0] = overlay_i[:,:,2]
+#     new_map[:,:,2] = overlay_i[:,:,0]
+#     cv2.imwrite(plot_path,new_map*255)
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -136,8 +136,14 @@ def analyze(img_path, output_path):
         density_path = os.path.join(output_path,class_name+'_'+ base_name.replace('.jpg','_pred.jpg'))
         
         output_print = output_density.data.numpy()[0,0,:,:]
-        pred = cv2.resize(output_print,(output_print.shape[1]*downscale_level,output_print.shape[0]*downscale_level),interpolation = cv2.INTER_CUBIC)/(downscale_level*downscale_level)
-        pred = cv2.resize(pred, (1280,960))
+        # Convert to Pillow Image
+        output_print_pil = Image.fromarray(output_print)
+
+        pred_pil = output_print_pil.resize((output_print_pil.width * downscale_level, output_print_pil.height * downscale_level), Image.BICUBIC) 
+        pred_pil = pred_pil.point(lambda i : i / (downscale_level * downscale_level))
+        pred_pil = pred_pil.resize((1280, 960))
+        pred = np.array(pred_pil)
+
 
         # for pyinstaller only
         # density_path =  os.path.join('./', density_path.split("/",2)[-1])

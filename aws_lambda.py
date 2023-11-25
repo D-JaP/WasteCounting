@@ -1,30 +1,22 @@
-from flask import Flask , request, jsonify
-from flask import render_template
+
 # from flaskwebgui import FlaskUI # import FlaskUI
 from run_program import analyze
 # from PIL import Image
 import os
 import uuid
 import shutil
-app = Flask(__name__)
 
-
-@app.route("/")
-def hello():  
-    return render_template("index.html")
-
-@app.route('/submit', methods=['POST'])
-def submit():
+def handler():
     # empty old files
-    deleteDir('./_internal/static/result')
+    deleteDir('./static/result')
 
     # Access form data using the request object
     files = request.files.getlist('image_uploads')
     if files ==None:
         return render_template('index.html', popup_error = 'No selected image')
     temp_name = str(uuid.uuid1())
-    temp_folder = os.path.join('./_internal/temp', temp_name)
-    temp_output = os.path.join('./_internal/static/result', temp_name)
+    temp_folder = os.path.join('./temp', temp_name)
+    temp_output = os.path.join('./static/result', temp_name)
     print(temp_output)
     if not os.path.exists(temp_folder):
         os.makedirs(temp_folder)
@@ -73,10 +65,4 @@ def deleteDir(folder):
 
 
 if __name__ == "__main__":
-  # If you are debugging you can do that in the browser:
-  app.run(host="0.0.0.0", port=8080)
-  # If you want to view the flaskwebgui window:
-    # FlaskUI(app=app, server="flask", width = 1400, height = 1000).run()
-
-# def handler(event, context):
-#     app.run(host="0.0.0.0", port=8080)
+  handler()

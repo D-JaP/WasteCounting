@@ -16,15 +16,15 @@ def hello():
 @app.route('/submit', methods=['POST'])
 def submit():
     # empty old files
-    deleteDir('./_internal/static/result')
+    deleteDir('./static/result')
 
     # Access form data using the request object
     files = request.files.getlist('image_uploads')
     if files ==None:
         return render_template('index.html', popup_error = 'No selected image')
     temp_name = str(uuid.uuid1())
-    temp_folder = os.path.join('./_internal/temp', temp_name)
-    temp_output = os.path.join('./_internal/static/result', temp_name)
+    temp_folder = os.path.join('./temp', temp_name)
+    temp_output = os.path.join('./static/result', temp_name)
     print(temp_output)
     if not os.path.exists(temp_folder):
         os.makedirs(temp_folder)
