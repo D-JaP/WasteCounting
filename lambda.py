@@ -61,7 +61,11 @@ def lambda_handler(event, context):
         "headers": {
             "Content-Type": "application/json"
         },
+<<<<<<< HEAD
         "body": json.loads(json.dumps(json_output))
+=======
+        "body": json.dumps(json_output)
+>>>>>>> e84ac3900df0022589da757a9acc5590551abf26
     }
         
 def deleteDir(folder):
