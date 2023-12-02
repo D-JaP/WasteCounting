@@ -2,3 +2,4 @@
 /dist
 /__pycache__
 /_internal
+.aws

@@ -9,17 +9,17 @@ RUN pip install matplotlib
 RUN pip install flask 
 RUN pip install pillow 
 RUN pip install h5py
+RUN pip install boto3
 
 COPY . ./
 COPY config.json /tmp/
 COPY final /tmp/final
 
-WORKDIR /tmp
-
 EXPOSE 8080
+# 
+RUN echo $(ls -la ~/.aws/)
 
-RUN echo $(ls -1)
-
+WORKDIR /tmp
 
 
 CMD ["lambda.lambda_handler"]
