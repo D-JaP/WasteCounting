@@ -7,34 +7,16 @@ from torch import device as torchdevice
 from torch import load as torch_load
 from torch import cat as torch_cat
 from torch.autograd import Variable
-import cv2
+# import cv2
 from torchvision import transforms
 import argparse
 from matplotlib import cm
+import boto3
 
 def read_config(file_path):
     with open(file_path, 'r') as file:
         config = json.load(file)
     return config
-
-
-def plotDensity(density,plot_path):
-    '''
-    @density: np array of corresponding density map
-    @plot_path: path to save the plot
-    '''
-
-    density= density*255.0
-
-    #plot with overlay
-    colormap_i = cm.jet(density)[:,:,0:3]
-
-    overlay_i = colormap_i
-
-    new_map = overlay_i.copy()
-    new_map[:,:,0] = overlay_i[:,:,2]
-    new_map[:,:,2] = overlay_i[:,:,0]
-    cv2.imwrite(plot_path,new_map*255)
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -56,17 +38,16 @@ def plotDensityBlend(origin_img, density, plot_path, alpha=0.5 ):
 
     blend = Image.blend(origin_img, Image.fromarray((new_map*255).astype(np.uint8)), alpha)
     blend.save(plot_path)
-
-# Remove .cuda() to keep the model on the CPU
-# model = model.cuda()
+    return plot_path
+    
+    
 
 # Modify the path of the saved checkpoint if necessary
-def analyze(img_path, output_path):
-    
-    config_path = './config.json'
+def analyze(img_path, output_path, s3UploadPath = None):
+    root_path = '/var/task'
+    config_path =os.path.join(root_path,'config.json') 
     config_data = read_config(config_path)
-    img_folder = os.path.dirname(img_path)
-    img_name = os.path.basename(img_path)
+
     output_data = {}
     for class_data in config_data["class"]:
         # load model
@@ -77,6 +58,9 @@ def analyze(img_path, output_path):
         tile = class_info["tile"]
         downscale_level = class_info["downscale_level"]
         weight_path =  os.path.join(config_data["weight_localtion"] , class_info["model_name"])
+        if 'AWS_LAMBDA_FUNCTION_NAME' in os.environ:
+            weight_path = os.path.join(root_path, weight_path)
+
         checkpoint = torch_load(weight_path, map_location=torchdevice('cpu'))
         model = None
 
@@ -116,12 +100,17 @@ def analyze(img_path, output_path):
 
             predicted1 = model(img1)
             predicted2 = model(img2)
+            del img1 , img2
+            predicted_temp_1 = torch_cat((predicted1,predicted2), dim =3)
+            del predicted1, predicted2
             predicted3 = model(img3)
             predicted4 = model(img4)
-            predicted_temp_1 = torch_cat((predicted1,predicted2), dim =3)
+            del img3 , img4
             predicted_temp_2 = torch_cat((predicted3,predicted4), dim =3)
+            del predicted3, predicted4
 
             output_density = torch_cat((predicted_temp_1, predicted_temp_2) , dim = 2)
+            del predicted_temp_1, predicted_temp_2
         else :
             print(f"tile {tile} is not supported. Program abort." , )
         
@@ -136,21 +125,24 @@ def analyze(img_path, output_path):
         density_path = os.path.join(output_path,class_name+'_'+ base_name.replace('.jpg','_pred.jpg'))
         
         output_print = output_density.data.numpy()[0,0,:,:]
-        pred = cv2.resize(output_print,(output_print.shape[1]*downscale_level,output_print.shape[0]*downscale_level),interpolation = cv2.INTER_CUBIC)/(downscale_level*downscale_level)
-        pred = cv2.resize(pred, (1280,960))
+        # Convert to Pillow Image
+        output_print_pil = Image.fromarray(output_print)
 
-        # for pyinstaller only
-        # density_path =  os.path.join('./', density_path.split("/",2)[-1])
+        pred_pil = output_print_pil.resize((output_print_pil.width * downscale_level, output_print_pil.height * downscale_level), Image.BICUBIC) 
+        pred_pil = pred_pil.point(lambda i : i / (downscale_level * downscale_level))
+        pred_pil = pred_pil.resize((1280, 960))
+        pred = np.array(pred_pil)
 
-
-        output_data[class_name] = {"count": int(np.round(pred_sum)), "path": density_path}
         
-        # plotDensity(pred,density_path)
-        plotDensityBlend(original_img.resize((1280,960)), pred, density_path, 0.5)
+        output_data[class_name] = {"count": int(np.round(pred_sum)), "path": density_path}
 
-    # json_string = json.dumps(output_data, indent=2)
-    # save output file to folder
-    # with open('./result/output.json', 'w') as json_file:
-    #     json_file.write(json_string)
-    
+        # plotDensity(pred,density_path)
+        plot_path = plotDensityBlend(original_img.resize((1280,960)), pred, density_path, 0.5)
+        # upload to s3
+        if s3UploadPath != None:
+            s3 = boto3.client('s3')
+            s3.upload_file(plot_path, 'parkvic-app', s3UploadPath + plot_path.split("/")[-1])
+            output_data[class_name]["path"] = "https://parkvic-app.s3.ap-southeast-2.amazonaws.com/" + s3UploadPath + plot_path.split("/")[-1]
+
+
     return output_data

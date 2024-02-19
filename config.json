@@ -1,6 +1,6 @@
 {   
     "name" : "Park Victoria Waste Counting Project",
-    "weight_localtion": "./final",
+    "weight_localtion": "final",
     "class": [
         {
             "plastic_bottle" :  {
