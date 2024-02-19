@@ -6,6 +6,9 @@ In this project , we advocate litter counting by regress litter densities. The b
 As a result, model works well on plastic bottle class due to its major occupation in our dataset. Following class is ball, helmet, etc.
 We can only collected 152 images in two months of work so other class is not enough sample for model to learn.
 
+## Serverless demo deployment with AWS cognito, lambda, dynamoDb, api gateway
+
+at https://parkvic-app.harry-playground.click
 
 ## Installation
 PyTorch 2.0
@@ -55,6 +58,7 @@ python plot.py
 
 ``` 
 This will plot objects density map
+
 
 ## Webgui Window base app
 
