@@ -20,7 +20,7 @@ s3 = boto3.client('s3')
 def lambda_handler(event, context):
     
     # Access form data using the request object
-    # Window suitable - cannot submit to lambda aws more than 6MB
+    # Window suitable - cannot submit to lambda aws more than 6M  B
     # body = json.loads(json.dumps(event["body"]))
     
     # files = to_dict(body)["images"]
@@ -31,8 +31,10 @@ def lambda_handler(event, context):
     files = to_dict(body)
     print(files)
     file_urls = files["images"]
-    
 
+    if(len(file_urls) > 1):
+        raise RuntimeError("Wrong API usage. This api only support one image at a time.")
+    
     if (len(file_urls) ==0) :
         raise RuntimeError("No file uploaded.")
     
@@ -88,11 +90,13 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "headers": {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "https://parkvic-app.harry-playground.click"
         },
-        "body": json.loads(json.dumps(json_output))
+        "body": json.dumps(json_output)
     }
-        
+    
+
 def deleteDir(folder):
     try:
         for filename in os.listdir(folder):
